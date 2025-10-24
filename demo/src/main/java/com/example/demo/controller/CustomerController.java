@@ -50,7 +50,7 @@ public class CustomerController {
     }
 
 	@GetMapping("/customers/{email}")
-    public Customer getCustoemr(@PathVariable String email) {
+    public Customer getCustomer(@PathVariable String email) {
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
         if(optionalCustomer.isPresent()) {
      	   return optionalCustomer.get();
