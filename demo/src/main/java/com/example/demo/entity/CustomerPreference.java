@@ -14,9 +14,6 @@ public class CustomerPreference {
     private Integer customerId;
 	private int minSquareFeet;
 	private int maxSquareFeet;
-	@Enumerated(EnumType.STRING)
-	@ColumnTransformer(write = "?::hometype")
-	private HomeType homeType;
 	private int minPrice;
 	private int maxPrice;
 	@ColumnTransformer(write = "?::bedcount")
@@ -33,13 +30,12 @@ public class CustomerPreference {
 		super();
 	}
 	
-	public CustomerPreference(Integer customerId, int minSquareFeet, int maxSquareFeet, HomeType homeType,
+	public CustomerPreference(Integer customerId, int minSquareFeet, int maxSquareFeet,
 			int minPrice, int maxPrice, BedCount minBed, BedCount maxBed, BathCount minBath) {
 		super();
 		this.customerId = customerId;
 		this.minSquareFeet = minSquareFeet;
 		this.maxSquareFeet = maxSquareFeet;
-		this.homeType = homeType;
 		this.minPrice = minPrice;
 		this.maxPrice = maxPrice;
 		this.minBed = minBed;
@@ -68,12 +64,6 @@ public class CustomerPreference {
 		this.maxSquareFeet = maxSquareFeet;
 	}
 	
-	public HomeType getHomeType() {
-		return homeType;
-	}
-	public void setHouseType(HomeType homeType) {
-		this.homeType = homeType;
-	}
 	public int getMinPrice() {
 		return minPrice;
 	}
@@ -105,5 +95,12 @@ public class CustomerPreference {
 	public void setMinBath(BathCount minBath) {
 		this.minBath = minBath;
 	} 
+	public String toString() {
+		return "Home Type: "+", Min Price: "+minPrice
+				+", Max Price: "+maxPrice+", Min Bed: "+minBed.name()
+				+", Max Bed: "+maxBed.name()+", Min Bath: "
+				+minBath.name()+", Min Square feet: "+minSquareFeet
+				+", Max Square Feet: "+maxSquareFeet;
+	}
 
 }

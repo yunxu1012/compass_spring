@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.exception.CustomerNotFoundException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.PasswordNotCorrectException;
 import com.example.demo.repository.CustomerRepository;
+import com.example.demo.security.AuthenticationService;
 
 @CrossOrigin(origins ="*")
 @RestController
@@ -25,29 +26,10 @@ import com.example.demo.repository.CustomerRepository;
 public class CustomerController {
 	@Autowired
     CustomerRepository customerRepository;
+	 @Autowired
+     private AuthenticationService authService;
 	Logger logger = LoggerFactory.getLogger(CustomerController.class);
 	
-	@PostMapping("/customers")
-    public Customer createCustoemr(@RequestBody Customer customer) {
-        
-		return customerRepository.save(customer);
-    }
-	
-	@PostMapping(path = "customers/authenticate")
-    public Customer authenticate(@RequestBody Customer customer) {
-           Optional<Customer> optionalCustomer = customerRepository.findByEmail(customer.getEmail());
-           if(optionalCustomer.isPresent()) {
-        	   Customer existingCustomer = optionalCustomer.get();
-        	   if(existingCustomer.getPassword().equals(customer.getPassword())) {
-        		   return existingCustomer;
-        	   }else {
-        		   throw new PasswordNotCorrectException("Password not correct");
-        	   }
-           }else {
-        	   throw new CustomerNotFoundException("Customer not found for: "
-           +customer.getEmail());
-           }
-    }
 
 	@GetMapping("/customers/{email}")
     public Customer getCustomer(@PathVariable String email) {
@@ -55,15 +37,15 @@ public class CustomerController {
         if(optionalCustomer.isPresent()) {
      	   return optionalCustomer.get();
         }else {
-     	   throw new CustomerNotFoundException("Customer not found for: "
+     	   throw new NotFoundException("Customer not found for: "
         +email);
         }
     }
 	
-	@PutMapping(path = "customers")
-    public Customer updateCustomer(@RequestBody Customer customer) {
+	@PutMapping(path = "customers/{email}")
+    public Customer updateCustomer(@PathVariable String email, @RequestBody Customer customer) {
 		   logger.info("Update customer");
-           Optional<Customer> optionalCustomer = customerRepository.findByEmail(customer.getEmail());
+           Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
            if(optionalCustomer.isPresent()) {
         	   Customer existingCustomer = optionalCustomer.get();
         	   existingCustomer.setLastName(customer.getLastName());
@@ -71,8 +53,8 @@ public class CustomerController {
         	   existingCustomer.setPhoneNumber(customer.getPhoneNumber());
         	   return customerRepository.save(existingCustomer);
            }else {
-        	   throw new CustomerNotFoundException("Customer not found for: "
-           +customer.getEmail());
+        	   throw new NotFoundException("Customer not found for: "
+           + email);
            }
     }
 

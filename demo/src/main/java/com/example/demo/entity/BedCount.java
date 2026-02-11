@@ -6,7 +6,6 @@ public enum BedCount {
     TWO("2"),
     THREE("3"),
     FOUR("4"),
-    FIVE("5"),
     NO_MAX("100");
 	private String count;
 	BedCount(String count) {
