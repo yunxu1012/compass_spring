@@ -5,10 +5,12 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.exception.NotFoundException;
-import com.example.demo.exception.PasswordNotCorrectException;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.security.AuthenticationService;
 
@@ -57,5 +58,19 @@ public class CustomerController {
            + email);
            }
     }
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping(path = "customers/admin")
+	public ResponseEntity<String> getAdminTest() {
+
+		return new ResponseEntity<>("ADMIN", HttpStatus.OK);
+	}
+	
+	@PreAuthorize("hasRole('CUSTOMER')")
+	@GetMapping(path = "customers/customer")
+	public ResponseEntity<String> getCustomerTest() {
+
+		return new ResponseEntity<>("CUSTOMER", HttpStatus.OK);
+	}
 
 }

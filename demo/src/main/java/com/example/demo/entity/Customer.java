@@ -1,15 +1,21 @@
 package com.example.demo.entity;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SequenceGenerator;
@@ -97,15 +103,38 @@ public class Customer implements UserDetails{
 	public void setPerference(CustomerPreference perference) {
 		this.perference = perference;
 	}
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "customer_role",
+            joinColumns = @JoinColumn(name = "customerId"),
+            inverseJoinColumns = @JoinColumn(name = "roleId"))
+    private Set<Role> roles = new HashSet<>();
+	
+	public Set<Role> getRoles(){
+		return roles;
+	}
+	
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+	
+	@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        for (Role role : getRoles()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+            /*for (Permission permission : role.getPermissions()) {
+                authorities.add(new SimpleGrantedAuthority(permission.getName()));
+            }*/
+        }
+        return authorities;
+    }
+	
 	 @Override
      public String getUsername() {
              return this.email;
      }
 	 
-	 @Override
-	    public Collection<? extends GrantedAuthority> getAuthorities() {
-	        return List.of();
-	    }
 	        @Override
 	    public boolean isAccountNonExpired() {
 	        return true;

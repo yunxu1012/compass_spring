@@ -1,19 +1,26 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.entity.Customer;
+import com.example.demo.entity.Role;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
@@ -49,6 +56,24 @@ public class JwtService {
             UserDetails userDetails,
             long expiration
     ) {
+    	 Map<String, Object> claims = new HashMap<>();
+
+         // Extract roles
+    	 Set<Role> roleSet = ((Customer)userDetails).getRoles();
+    	 List<String> roles = new ArrayList<>();
+    	 for(Role role:roleSet) {
+    		 roles.add(role.getName());
+    	 }
+         
+        claims.put("roles", roles);
+
+         // Extract permissions
+         /*Set<String> permissions =  ((Customer)userDetails).getRoles().stream()
+                 .flatMap(role -> role.getPermissions().stream())
+                 .map(Permission::getName)
+                 .collect(Collectors.toSet());
+         claims.put("permissions", permissions); */
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
