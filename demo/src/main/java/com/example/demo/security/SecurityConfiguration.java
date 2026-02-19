@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                 .permitAll()
                 .requestMatchers("/api/customers/customer").hasRole("CUSTOMER")
                 .requestMatchers("/api/customers/admin").hasRole("ADMIN")
+                .requestMatchers("/api/customers/read").hasAuthority("READ")
                 .anyRequest()
                 .authenticated()
                 .and()

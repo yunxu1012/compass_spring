@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.Permission;
 import com.example.demo.entity.Role;
 
 import io.jsonwebtoken.Claims;
@@ -68,11 +70,11 @@ public class JwtService {
         claims.put("roles", roles);
 
          // Extract permissions
-         /*Set<String> permissions =  ((Customer)userDetails).getRoles().stream()
+         Set<String> permissions =  ((Customer)userDetails).getRoles().stream()
                  .flatMap(role -> role.getPermissions().stream())
                  .map(Permission::getName)
                  .collect(Collectors.toSet());
-         claims.put("permissions", permissions); */
+         claims.put("permissions", permissions); 
 
         return Jwts
                 .builder()

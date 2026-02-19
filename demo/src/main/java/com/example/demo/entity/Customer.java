@@ -123,9 +123,9 @@ public class Customer implements UserDetails{
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (Role role : getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-            /*for (Permission permission : role.getPermissions()) {
+            for (Permission permission : role.getPermissions()) {
                 authorities.add(new SimpleGrantedAuthority(permission.getName()));
-            }*/
+            }
         }
         return authorities;
     }

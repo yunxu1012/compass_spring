@@ -72,5 +72,12 @@ public class CustomerController {
 
 		return new ResponseEntity<>("CUSTOMER", HttpStatus.OK);
 	}
+	
+	
+	@GetMapping(path = "customers/read")
+	public ResponseEntity<String> getRead() {
+
+		return new ResponseEntity<>("READ", HttpStatus.OK);
+	}
 
 }
