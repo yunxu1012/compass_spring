@@ -19,9 +19,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Transient;
 
 @Entity
-public class Customer implements UserDetails{
+public class Customer implements UserDetails {
 	@Id
 	@SequenceGenerator(initialValue = 1, name = "cust_seq", sequenceName = "customer_seq")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cust_seq")
@@ -103,57 +104,56 @@ public class Customer implements UserDetails{
 	public void setPerference(CustomerPreference perference) {
 		this.perference = perference;
 	}
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "customer_role",
-            joinColumns = @JoinColumn(name = "customerId"),
-            inverseJoinColumns = @JoinColumn(name = "roleId"))
-    private Set<Role> roles = new HashSet<>();
-	
-	public Set<Role> getRoles(){
+	@JoinTable(name = "customer_role", joinColumns = @JoinColumn(name = "customerId"), 
+	inverseJoinColumns = @JoinColumn(name = "roleId"))
+	private Set<Role> roles = new HashSet<>();
+
+	public Set<Role> getRoles() {
 		return roles;
 	}
-	
+
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 	
+
 	@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        for (Role role : getRoles()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-            for (Permission permission : role.getPermissions()) {
-                authorities.add(new SimpleGrantedAuthority(permission.getName()));
-            }
-        }
-        return authorities;
-    }
-	
-	 @Override
-     public String getUsername() {
-             return this.email;
-     }
-	 
-	        @Override
-	    public boolean isAccountNonExpired() {
-	        return true;
-	    }
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		Set<GrantedAuthority> authorities = new HashSet<>();
+		for (Role role : getRoles()) {
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+			for (Permission permission : role.getPermissions()) {
+				authorities.add(new SimpleGrantedAuthority(permission.getName()));
+			}
+		}
+		return authorities;
+	}
 
-	    @Override
-	    public boolean isAccountNonLocked() {
-	        return true;
-	    }
+	@Override
+	public String getUsername() {
+		return this.email;
+	}
 
-	    @Override
-	    public boolean isCredentialsNonExpired() {
-	        return true;
-	    }
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-	    @Override
-	    public boolean isEnabled() {
-	        return true;
-	    }
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
 
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 
 }

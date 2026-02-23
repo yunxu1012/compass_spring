@@ -1,6 +1,9 @@
 package com.example.demo.controller;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.City;
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.CustomerCity;
 import com.example.demo.entity.CustomerPreference;
 import com.example.demo.exception.AlreadyExistsException;
 import com.example.demo.exception.NotFoundException;
+import com.example.demo.repository.CityRepository;
+import com.example.demo.repository.CustomerCityRepository;
 import com.example.demo.repository.CustomerPreferenceRepository;
 import com.example.demo.repository.CustomerRepository;
 
@@ -26,7 +33,11 @@ import com.example.demo.repository.CustomerRepository;
 @RequestMapping(path = "/api")
 public class CustomerPreferenceController {
 	@Autowired
+    CustomerCityRepository customerCityRepository;
+	@Autowired
     CustomerPreferenceRepository customerPreferenceRepository;
+	@Autowired
+    CityRepository cityRepository;
 	@Autowired
     CustomerRepository customerRepository;
 	Logger logger = LoggerFactory.getLogger(CustomerPreferenceController.class);
@@ -44,6 +55,13 @@ public class CustomerPreferenceController {
      			        +email);
         	}
         	customerPreference.setCustomerId(customer.getCustomerId());
+        	if(customerPreference.getCities()!=null) {
+                
+        		for(City city: customerPreference.getCities()) {
+        			CustomerCity cc = new CustomerCity(customer.getCustomerId(), city.getCityId());
+        			customerCityRepository.save(cc);
+        		}
+        	}
         	return customerPreferenceRepository.save(customerPreference);
         }else {
       	   throw new NotFoundException("Customer not found for: "
@@ -59,6 +77,15 @@ public class CustomerPreferenceController {
      	   Customer customer =  optionalCustomer.get();
      	   CustomerPreference preference = customer.getPerference();
      	   if(preference!=null) {
+     		   Set<City> cities = new HashSet<>();
+     		   List<CustomerCity> list = customerCityRepository.findByCustomerId(customer.getCustomerId());
+     		   for(CustomerCity cc:list) {
+     			   City city = cityRepository.getById(cc.getCityId());
+     			   if(city!=null) {
+     				   cities.add(city);
+     			   }
+     		   }
+     		   preference.setCities(cities);
      		   return preference;
      	   }else {
      		  throw new NotFoundException("Customer Preference not found for: "
@@ -91,6 +118,14 @@ public class CustomerPreferenceController {
         	   existingPreference.setMaxPrice(customerPreference.getMaxPrice());
         	   existingPreference.setMinSquareFeet(customerPreference.getMinSquareFeet()); 
         	   existingPreference.setMaxSquareFeet(customerPreference.getMaxSquareFeet()); 
+        	   customerCityRepository.deleteByCustomerId(existingPreference.getCustomerId());
+        	   if(customerPreference.getCities()!=null) {
+                   
+           		for(City city: customerPreference.getCities()) {
+           			CustomerCity cc = new CustomerCity(existingPreference.getCustomerId(), city.getCityId());
+           			customerCityRepository.save(cc);
+           		}
+           	}
         	   return customerPreferenceRepository.save(existingPreference);
            }else {
         	   throw new NotFoundException("Customer not found for: "

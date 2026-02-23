@@ -1,12 +1,20 @@
 package com.example.demo.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.annotations.ColumnTransformer;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Transient;
 
 @Entity
 public class CustomerPreference {
@@ -25,6 +33,8 @@ public class CustomerPreference {
 	@ColumnTransformer(write = "?::bathcount")
 	@Convert(converter = BathCountConverter.class)
 	private BathCount minBath;
+	@Transient
+	private String cityStr;
 	
 	public CustomerPreference() {
 		super();
@@ -95,12 +105,35 @@ public class CustomerPreference {
 	public void setMinBath(BathCount minBath) {
 		this.minBath = minBath;
 	} 
+	
+	public String getCityStr() {
+		return cityStr;
+	}
+
+	public void setCityStr(String cityStr) {
+		this.cityStr = cityStr;
+	}
+
 	public String toString() {
 		return "Home Type: "+", Min Price: "+minPrice
 				+", Max Price: "+maxPrice+", Min Bed: "+minBed.name()
 				+", Max Bed: "+maxBed.name()+", Min Bath: "
 				+minBath.name()+", Min Square feet: "+minSquareFeet
 				+", Max Square Feet: "+maxSquareFeet;
+	}
+	
+	//@ManyToMany(fetch = FetchType.EAGER)
+	//@JoinTable(name = "customer_city", joinColumns = @JoinColumn(name = "customerId"), 
+	//inverseJoinColumns = @JoinColumn(name = "cityId"))
+	@Transient
+	private Set<City> cities = new HashSet<>();
+
+	public Set<City> getCities() {
+		return cities;
+	}
+
+	public void setCities(Set<City> cities) {
+		this.cities = cities;
 	}
 
 }
