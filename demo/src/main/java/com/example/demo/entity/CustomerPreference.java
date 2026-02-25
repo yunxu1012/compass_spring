@@ -135,5 +135,18 @@ public class CustomerPreference {
 	public void setCities(Set<City> cities) {
 		this.cities = cities;
 	}
+	
+	@Transient
+	private Set<String> hometypes = new HashSet<>();
+
+	public Set<String> getHometypes() {
+		return hometypes;
+	}
+
+	public void setHometypes(Set<String> hometypes) {
+		this.hometypes = hometypes;
+	}
+
+	
 
 }

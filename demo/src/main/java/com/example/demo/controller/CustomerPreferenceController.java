@@ -20,116 +20,142 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entity.City;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerCity;
+import com.example.demo.entity.CustomerHometype;
 import com.example.demo.entity.CustomerPreference;
+import com.example.demo.entity.Hometype;
 import com.example.demo.exception.AlreadyExistsException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.CityRepository;
 import com.example.demo.repository.CustomerCityRepository;
+import com.example.demo.repository.CustomerHometypeRepository;
 import com.example.demo.repository.CustomerPreferenceRepository;
 import com.example.demo.repository.CustomerRepository;
 
-@CrossOrigin(origins ="*")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(path = "/api")
 public class CustomerPreferenceController {
 	@Autowired
-    CustomerCityRepository customerCityRepository;
+	CustomerCityRepository customerCityRepository;
 	@Autowired
-    CustomerPreferenceRepository customerPreferenceRepository;
+	CustomerPreferenceRepository customerPreferenceRepository;
 	@Autowired
-    CityRepository cityRepository;
+	CityRepository cityRepository;
 	@Autowired
-    CustomerRepository customerRepository;
+	CustomerRepository customerRepository;
+	@Autowired
+	CustomerHometypeRepository customerHometypeRepository;
 	Logger logger = LoggerFactory.getLogger(CustomerPreferenceController.class);
-	
+
 	@PostMapping("/customersPreferences/{email}")
-    public CustomerPreference createCustomerPreference(@PathVariable String email,
-    		@RequestBody CustomerPreference customerPreference) {
+	public CustomerPreference createCustomerPreference(@PathVariable String email,
+			@RequestBody CustomerPreference customerPreference) {
 		logger.info("Create customer preference!!!");
-		   logger.info("Customer Prference: "+customerPreference.toString());
+		logger.info("Customer Prference: " + customerPreference.toString());
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
-        if(optionalCustomer.isPresent()) {
-        	Customer customer =  optionalCustomer.get();
-        	if(customer.getPerference()!=null) {
-        		throw new AlreadyExistsException("Customer Preference already exists for: "
-     			        +email);
-        	}
-        	customerPreference.setCustomerId(customer.getCustomerId());
-        	if(customerPreference.getCities()!=null) {
-                
-        		for(City city: customerPreference.getCities()) {
-        			CustomerCity cc = new CustomerCity(customer.getCustomerId(), city.getCityId());
-        			customerCityRepository.save(cc);
-        		}
-        	}
-        	return customerPreferenceRepository.save(customerPreference);
-        }else {
-      	   throw new NotFoundException("Customer not found for: "
-      		        +email);
-        }
-    }
-	
+		if (optionalCustomer.isPresent()) {
+			Customer customer = optionalCustomer.get();
+			if (customer.getPerference() != null) {
+				throw new AlreadyExistsException("Customer Preference already exists for: " + email);
+			}
+			customerPreference.setCustomerId(customer.getCustomerId());
+			if (customerPreference.getCities() != null) {
+
+				for (City city : customerPreference.getCities()) {
+					CustomerCity cc = new CustomerCity(customer.getCustomerId(), city.getCityId());
+					customerCityRepository.save(cc);
+				}
+			}
+			if (customerPreference.getHometypes() != null) {
+				for (String type : customerPreference.getHometypes()) {
+					CustomerHometype ch = new CustomerHometype(customer.getCustomerId(), Hometype.fromType(type));
+					customerHometypeRepository.save(ch);
+				}
+			}
+			CustomerPreference cp = customerPreferenceRepository.save(customerPreference);
+			cp.setCities(customerPreference.getCities());
+			cp.setHometypes(customerPreference.getHometypes());
+			return cp;
+		} else {
+			throw new NotFoundException("Customer not found for: " + email);
+		}
+	}
+
 	@GetMapping("/customersPreferences/{email}")
-    public CustomerPreference getCustoemr(@PathVariable String email) {
+	public CustomerPreference getCustomerPreferene(@PathVariable String email) {
 		logger.info("Select customer!!!");
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
-        if(optionalCustomer.isPresent()) {
-     	   Customer customer =  optionalCustomer.get();
-     	   CustomerPreference preference = customer.getPerference();
-     	   if(preference!=null) {
-     		   Set<City> cities = new HashSet<>();
-     		   List<CustomerCity> list = customerCityRepository.findByCustomerId(customer.getCustomerId());
-     		   for(CustomerCity cc:list) {
-     			   City city = cityRepository.getById(cc.getCityId());
-     			   if(city!=null) {
-     				   cities.add(city);
-     			   }
-     		   }
-     		   preference.setCities(cities);
-     		   return preference;
-     	   }else {
-     		  throw new NotFoundException("Customer Preference not found for: "
-     			        +email);
-     	   }
-        }else {
-     	   throw new NotFoundException("Customer not found for: "
-        +email);
-        }
-    }
-	
+		if (optionalCustomer.isPresent()) {
+			Customer customer = optionalCustomer.get();
+			CustomerPreference preference = customer.getPerference();
+			if (preference != null) {
+				Set<City> cities = new HashSet<>();
+				List<CustomerCity> list = customerCityRepository.findByCustomerId(customer.getCustomerId());
+				for (CustomerCity cc : list) {
+					City city = cityRepository.getById(cc.getCityId());
+					if (city != null) {
+						cities.add(city);
+					}
+				}
+				preference.setCities(cities);
+				Set<String> types = new HashSet<>();
+				List<CustomerHometype> homeTypes = customerHometypeRepository.findByCustomerId(customer.getCustomerId());
+				for (CustomerHometype ch : homeTypes) {
+					Hometype type = ch.getHometype();
+					if(type!=null) {
+						types.add(type.getType());
+					}
+				}
+				preference.setHometypes(types);
+				return preference;
+			} else {
+				throw new NotFoundException("Customer Preference not found for: " + email);
+			}
+		} else {
+			throw new NotFoundException("Customer not found for: " + email);
+		}
+	}
 
 	@PutMapping(path = "customersPreferences/{email}")
-    public CustomerPreference updateCustomerPreference(@PathVariable String email,
-    		@RequestBody CustomerPreference customerPreference) {
-		   logger.info("Update customer!!!");
-		   logger.info("Customer Prference: "+customerPreference.toString());
-           Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
-           if(optionalCustomer.isPresent()) {
-        	   Customer existingCustomer = optionalCustomer.get();
-        	   CustomerPreference existingPreference = existingCustomer.getPerference();
-        	   if(existingPreference==null) {
-        		   throw new NotFoundException("Customer Preference not found for: "
-        		           + email); 
-        	   }
-        	   existingPreference.setMinBed(customerPreference.getMinBed());
-        	   existingPreference.setMaxBed(customerPreference.getMaxBed());
-        	   existingPreference.setMinBath(customerPreference.getMinBath());
-        	   existingPreference.setMinPrice(customerPreference.getMinPrice());
-        	   existingPreference.setMaxPrice(customerPreference.getMaxPrice());
-        	   existingPreference.setMinSquareFeet(customerPreference.getMinSquareFeet()); 
-        	   existingPreference.setMaxSquareFeet(customerPreference.getMaxSquareFeet()); 
-        	   customerCityRepository.deleteByCustomerId(existingPreference.getCustomerId());
-        	   if(customerPreference.getCities()!=null) {
-                   
-           		for(City city: customerPreference.getCities()) {
-           			CustomerCity cc = new CustomerCity(existingPreference.getCustomerId(), city.getCityId());
-           			customerCityRepository.save(cc);
-           		}
-           	}
-        	   return customerPreferenceRepository.save(existingPreference);
-           }else {
-        	   throw new NotFoundException("Customer not found for: "
-           + email);
-           }
-    }
+	public CustomerPreference updateCustomerPreference(@PathVariable String email,
+			@RequestBody CustomerPreference customerPreference) {
+		logger.info("Update customer!!!");
+		logger.info("Customer Prference: " + customerPreference.toString());
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		if (optionalCustomer.isPresent()) {
+			Customer existingCustomer = optionalCustomer.get();
+			CustomerPreference existingPreference = existingCustomer.getPerference();
+			if (existingPreference == null) {
+				throw new NotFoundException("Customer Preference not found for: " + email);
+			}
+			existingPreference.setMinBed(customerPreference.getMinBed());
+			existingPreference.setMaxBed(customerPreference.getMaxBed());
+			existingPreference.setMinBath(customerPreference.getMinBath());
+			existingPreference.setMinPrice(customerPreference.getMinPrice());
+			existingPreference.setMaxPrice(customerPreference.getMaxPrice());
+			existingPreference.setMinSquareFeet(customerPreference.getMinSquareFeet());
+			existingPreference.setMaxSquareFeet(customerPreference.getMaxSquareFeet());
+			customerCityRepository.deleteByCustomerId(existingPreference.getCustomerId());
+			if (customerPreference.getCities() != null) {
+
+				for (City city : customerPreference.getCities()) {
+					CustomerCity cc = new CustomerCity(existingPreference.getCustomerId(), city.getCityId());
+					customerCityRepository.save(cc);
+				}
+			}
+			customerHometypeRepository.deleteByCustomerId(existingPreference.getCustomerId());
+			if (customerPreference.getHometypes() != null) {
+				for (String type : customerPreference.getHometypes()) {
+					CustomerHometype ch = new CustomerHometype(existingPreference.getCustomerId(), Hometype.fromType(type));
+					customerHometypeRepository.save(ch);
+				}
+			}
+			CustomerPreference cp = customerPreferenceRepository.save(existingPreference);
+			cp.setCities(customerPreference.getCities());
+			cp.setHometypes(customerPreference.getHometypes());
+			return cp;
+		} else {
+			throw new NotFoundException("Customer not found for: " + email);
+		}
+	}
 }
