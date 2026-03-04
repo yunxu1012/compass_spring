@@ -55,7 +55,7 @@ public class CustomerPreferenceController {
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
 		if (optionalCustomer.isPresent()) {
 			Customer customer = optionalCustomer.get();
-			if (customer.getPerference() != null) {
+			if (customer.getPreference() != null) {
 				throw new AlreadyExistsException("Customer Preference already exists for: " + email);
 			}
 			customerPreference.setCustomerId(customer.getCustomerId());
@@ -83,11 +83,11 @@ public class CustomerPreferenceController {
 
 	@GetMapping("/customersPreferences/{email}")
 	public CustomerPreference getCustomerPreferene(@PathVariable String email) {
-		logger.info("Select customer!!!");
+		logger.info("Select customer preference123!!!");
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
 		if (optionalCustomer.isPresent()) {
 			Customer customer = optionalCustomer.get();
-			CustomerPreference preference = customer.getPerference();
+			CustomerPreference preference = customer.getPreference();
 			if (preference != null) {
 				Set<City> cities = new HashSet<>();
 				List<CustomerCity> list = customerCityRepository.findByCustomerId(customer.getCustomerId());
@@ -124,7 +124,7 @@ public class CustomerPreferenceController {
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
 		if (optionalCustomer.isPresent()) {
 			Customer existingCustomer = optionalCustomer.get();
-			CustomerPreference existingPreference = existingCustomer.getPerference();
+			CustomerPreference existingPreference = existingCustomer.getPreference();
 			if (existingPreference == null) {
 				throw new NotFoundException("Customer Preference not found for: " + email);
 			}

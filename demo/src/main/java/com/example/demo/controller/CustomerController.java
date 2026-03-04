@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -78,6 +79,12 @@ public class CustomerController {
 	public ResponseEntity<String> getRead() {
 
 		return new ResponseEntity<>("READ", HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "/customers")
+	public ResponseEntity<List<Customer>> getCustomerList() {
+        List<Customer> customers = customerRepository.findAll();
+		return new ResponseEntity<>(customers, HttpStatus.OK);
 	}
 
 }

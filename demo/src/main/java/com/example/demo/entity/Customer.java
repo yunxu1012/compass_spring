@@ -34,7 +34,7 @@ public class Customer implements UserDetails {
 	private String phoneNumber;
 	@OneToOne
 	@PrimaryKeyJoinColumn
-	private CustomerPreference perference;
+	private CustomerPreference preference;
 
 	public Customer() {
 		super();
@@ -97,13 +97,13 @@ public class Customer implements UserDetails {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public CustomerPreference getPerference() {
-		return perference;
+	public CustomerPreference getPreference() {
+		return preference;
 	}
 
-	public void setPerference(CustomerPreference perference) {
+	/*public void setPerference(CustomerPreference perference) {
 		this.perference = perference;
-	}
+	}*/
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "customer_role", joinColumns = @JoinColumn(name = "customerId"), 
