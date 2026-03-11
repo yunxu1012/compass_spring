@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.City;
 import com.example.demo.entity.Customer;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.security.AuthenticationService;
+import com.example.demo.service.CustomerService;
 
 @CrossOrigin(origins ="*")
 @RestController
@@ -28,6 +31,8 @@ import com.example.demo.security.AuthenticationService;
 public class CustomerController {
 	@Autowired
     CustomerRepository customerRepository;
+	@Autowired
+    CustomerService customerService;
 	 @Autowired
      private AuthenticationService authService;
 	Logger logger = LoggerFactory.getLogger(CustomerController.class);
@@ -37,7 +42,14 @@ public class CustomerController {
     public Customer getCustomer(@PathVariable String email) {
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
         if(optionalCustomer.isPresent()) {
-     	   return optionalCustomer.get();
+     	   Customer customer =  optionalCustomer.get();
+     	   if(customer.getPreference()!=null) {
+     		   Set<City> cities = customerService.findCities(customer);
+     		  customer.getPreference().setCities(cities);
+     		  Set<String> homeTypes = customerService.findHomeTypes(customer);
+     		 customer.getPreference().setHometypes(homeTypes);
+     	   }
+     	   return customer;
         }else {
      	   throw new NotFoundException("Customer not found for: "
         +email);
@@ -86,5 +98,6 @@ public class CustomerController {
         List<Customer> customers = customerRepository.findAll();
 		return new ResponseEntity<>(customers, HttpStatus.OK);
 	}
+
 
 }

@@ -115,7 +115,7 @@ public class CustomerPreference {
 	}
 
 	public String toString() {
-		return "Home Type: "+", Min Price: "+minPrice
+		return " Min Price: "+minPrice
 				+", Max Price: "+maxPrice+", Min Bed: "+minBed.name()
 				+", Max Bed: "+maxBed.name()+", Min Bath: "
 				+minBath.name()+", Min Square feet: "+minSquareFeet
