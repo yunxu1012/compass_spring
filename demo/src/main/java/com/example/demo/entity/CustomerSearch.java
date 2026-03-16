@@ -5,7 +5,7 @@ public class CustomerSearch {
 	private int price;
 	private BedCount bedCount;
 	private BathCount bathCount;
-	private String city;
+	private Integer cityId;
     private String homeType;
 	
 	public CustomerSearch() {
@@ -14,14 +14,14 @@ public class CustomerSearch {
 	
 	
 	
-	public CustomerSearch(int squareFeet, int price,  BedCount bedCount, BathCount bathCount, String city,
+	public CustomerSearch(int squareFeet, int price,  BedCount bedCount, BathCount bathCount, Integer cityId,
 			String homeType) {
 		super();
 		this.squareFeet = squareFeet;
 		this.price = price;
 		this.bedCount = bedCount;
 		this.bathCount = bathCount;
-		this.city = city;
+		this.cityId = cityId;
 		this.homeType = homeType;
 	}
 
@@ -59,12 +59,12 @@ public class CustomerSearch {
 		this.bathCount = bathCount;
 	}
 
-	public String getCity() {
-		return city;
+	public Integer getCityId() {
+		return cityId;
 	}
 
-	public void setCity(String city) {
-		this.city = city;
+	public void setCity(Integer cityId) {
+		this.cityId = cityId;
 	}
 
 	public String getHomeType() {

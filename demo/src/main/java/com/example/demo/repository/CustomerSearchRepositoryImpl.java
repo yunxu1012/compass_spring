@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerSearch;
+import com.example.demo.entity.Hometype;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
 @Repository
@@ -25,7 +25,6 @@ public class CustomerSearchRepositoryImpl {
 
 	 @Transactional
 	public List<Customer> searchCustomer(CustomerSearch search){
-		 logger.info("customer search here003!!!!\n\n");
 		String sql = 
 				  "SELECT c.customer_id as customerId, c.first_name as firstName, "
 				  + " c.last_name as lastName, c.email as email, "
@@ -36,13 +35,19 @@ public class CustomerSearchRepositoryImpl {
 						  + " and cp.min_bed <= CAST(:bedCount AS bedcount) "
 						  + " and cp.max_bed >= CAST(:bedCount AS bedcount) "
 						  + " and cp.min_bath <=  CAST(:bathCount AS bathcount)"
-						  + " and cp.customer_id = c.customer_id";
+						  + " and cp.customer_id = c.customer_id"
+		                  + " and c.customer_id in (select customer_id from customer_city "
+		                  + " where city_id = :cityId) "
+		                  + " and c.customer_id in (select customer_id from customer_hometype "
+		                  + " where hometype = CAST(:hometype AS hometype)) ";
 				Query query = em.createNativeQuery(sql);
 						List<Object[]> objects = query
 						  .setParameter("price", search.getPrice())
 						  .setParameter("squarefeet", search.getSquareFeet())
 						  .setParameter("bedCount", search.getBedCount().getCount())
 						  .setParameter("bathCount", search.getBathCount().getCount())
+						  .setParameter("cityId", search.getCityId())
+						  .setParameter("hometype", Hometype.fromType(search.getHomeType()).name())
 						  .getResultList();
 			 List<Customer> customers = new ArrayList<>();
 			 for(Object[] object:objects) {
