@@ -72,26 +72,6 @@ public class CustomerController {
            }
     }
 	
-	@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping(path = "customers/admin")
-	public ResponseEntity<String> getAdminTest() {
-
-		return new ResponseEntity<>("ADMIN", HttpStatus.OK);
-	}
-	
-	@PreAuthorize("hasRole('CUSTOMER')")
-	@GetMapping(path = "customers/customer")
-	public ResponseEntity<String> getCustomerTest() {
-
-		return new ResponseEntity<>("CUSTOMER", HttpStatus.OK);
-	}
-	
-	
-	@GetMapping(path = "customers/read")
-	public ResponseEntity<String> getRead() {
-
-		return new ResponseEntity<>("READ", HttpStatus.OK);
-	}
 	
 	@GetMapping(path = "/customers")
 	public ResponseEntity<List<Customer>> getCustomerList() {
