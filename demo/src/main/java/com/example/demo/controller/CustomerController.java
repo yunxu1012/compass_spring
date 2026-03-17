@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.City;
 import com.example.demo.entity.Customer;
-import com.example.demo.exception.NotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.security.AuthenticationService;
 import com.example.demo.service.CustomerService;
@@ -51,7 +51,7 @@ public class CustomerController {
      	   }
      	   return customer;
         }else {
-     	   throw new NotFoundException("Customer not found for: "
+     	   throw new UserNotFoundException("Customer not found for: "
         +email);
         }
     }
@@ -67,7 +67,7 @@ public class CustomerController {
         	   existingCustomer.setPhoneNumber(customer.getPhoneNumber());
         	   return customerRepository.save(existingCustomer);
            }else {
-        	   throw new NotFoundException("Customer not found for: "
+        	   throw new UserNotFoundException("Customer not found for: "
            + email);
            }
     }

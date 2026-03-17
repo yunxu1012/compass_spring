@@ -24,7 +24,7 @@ import com.example.demo.entity.CustomerHometype;
 import com.example.demo.entity.CustomerPreference;
 import com.example.demo.entity.Hometype;
 import com.example.demo.exception.AlreadyExistsException;
-import com.example.demo.exception.NotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.CityRepository;
 import com.example.demo.repository.CustomerCityRepository;
 import com.example.demo.repository.CustomerHometypeRepository;
@@ -77,7 +77,7 @@ public class CustomerPreferenceController {
 			cp.setHometypes(customerPreference.getHometypes());
 			return cp;
 		} else {
-			throw new NotFoundException("Customer not found for: " + email);
+			throw new UserNotFoundException("Customer not found for: " + email);
 		}
 	}
 
@@ -109,10 +109,10 @@ public class CustomerPreferenceController {
 				preference.setHometypes(types);
 				return preference;
 			} else {
-				throw new NotFoundException("Customer Preference not found for: " + email);
+				throw new UserNotFoundException("Customer Preference not found for: " + email);
 			}
 		} else {
-			throw new NotFoundException("Customer not found for: " + email);
+			throw new UserNotFoundException("Customer not found for: " + email);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class CustomerPreferenceController {
 			Customer existingCustomer = optionalCustomer.get();
 			CustomerPreference existingPreference = existingCustomer.getPreference();
 			if (existingPreference == null) {
-				throw new NotFoundException("Customer Preference not found for: " + email);
+				throw new UserNotFoundException("Customer Preference not found for: " + email);
 			}
 			existingPreference.setMinBed(customerPreference.getMinBed());
 			existingPreference.setMaxBed(customerPreference.getMaxBed());
@@ -155,7 +155,7 @@ public class CustomerPreferenceController {
 			cp.setHometypes(customerPreference.getHometypes());
 			return cp;
 		} else {
-			throw new NotFoundException("Customer not found for: " + email);
+			throw new UserNotFoundException("Customer not found for: " + email);
 		}
 	}
 }
