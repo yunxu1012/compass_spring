@@ -24,6 +24,7 @@ import com.example.demo.repository.CustomerRoleRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.security.AuthenticationService;
 import com.example.demo.security.JwtService;
+import com.example.demo.service.CustomerService;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -39,7 +40,9 @@ public class AuthController {
 	private AuthenticationService authService;
 	@Autowired
 	private JwtService jwtService;
-
+	@Autowired
+	CustomerService customerService;
+	
 	Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 	@PostMapping("/auth/customer/signup")
@@ -69,7 +72,7 @@ public class AuthController {
 	@PostMapping(path = "auth/admin/login")
 	public ResponseEntity<String> authenticateAdmin(@RequestBody Customer input) {
 		Customer authenticatedUser = authService.authenticate(input);
-		if (!checkCustomerType(authenticatedUser, RoleType.ADMIN.name())) {
+		if (!customerService.checkCustomerType(authenticatedUser, RoleType.ADMIN.name())) {
 			throw new UserTypeErrorException("User is not admin. Please use customer login");
 		}
 		String jwtToken = jwtService.generateToken(authenticatedUser);
@@ -79,29 +82,14 @@ public class AuthController {
 	@PostMapping(path = "auth/customer/login")
 	public ResponseEntity<String> authenticateCustomer(@RequestBody Customer input) {
 		Customer authenticatedUser = authService.authenticate(input);
-		if (!checkCustomerType(authenticatedUser, RoleType.CUSTOMER.name())) {
+		if (!customerService.checkCustomerType(authenticatedUser, RoleType.CUSTOMER.name())) {
 			throw new UserTypeErrorException("User is not customer. Please use admin login");
 		}
 
 		String jwtToken = jwtService.generateToken(authenticatedUser);
 		return new ResponseEntity<>(jwtToken, HttpStatus.CREATED);
 	}
-	
-	private boolean checkCustomerType(Customer customer, String type) {
-		boolean isType = false;
-		List<CustomerRole> list = customerRoleRepository.findByCustomerId(customer.getCustomerId());
-		for (CustomerRole cr : list) {
-			Optional<Role> op = roleRepository.findById(cr.getRoleId());
-			if(op.isPresent()) {
-				Role role = op.get();
-				if (role.getName().equals(type)) {
-					isType = true;
-				}
-			}
 
-		}
-		return isType;
-		
-	}
+	
 
 }

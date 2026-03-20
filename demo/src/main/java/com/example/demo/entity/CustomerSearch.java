@@ -74,5 +74,10 @@ public class CustomerSearch {
 	public void setHomeType(String homeType) {
 		this.homeType = homeType;
 	}
+	
+	public String toString() {
+		return "HouseType: "+homeType+", price: "+price+", bedcount: "+bedCount.getCount()
+		 +", "+", bathCount: "+bathCount+", cityId: "+cityId;
+	}
 
 }
