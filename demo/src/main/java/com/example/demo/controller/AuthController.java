@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerRole;
+import com.example.demo.entity.JwtInfo;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.RoleType;
 import com.example.demo.exception.UserTypeErrorException;
@@ -70,24 +68,26 @@ public class AuthController {
 	}
 
 	@PostMapping(path = "auth/admin/login")
-	public ResponseEntity<String> authenticateAdmin(@RequestBody Customer input) {
+	public ResponseEntity<JwtInfo> authenticateAdmin(@RequestBody Customer input) {
 		Customer authenticatedUser = authService.authenticate(input);
 		if (!customerService.checkCustomerType(authenticatedUser, RoleType.ADMIN.name())) {
 			throw new UserTypeErrorException("User is not admin. Please use customer login");
 		}
 		String jwtToken = jwtService.generateToken(authenticatedUser);
-		return new ResponseEntity<>(jwtToken, HttpStatus.CREATED);
+		JwtInfo info = new JwtInfo(jwtToken);
+		return new ResponseEntity<>(info, HttpStatus.CREATED);
 	}
 
 	@PostMapping(path = "auth/customer/login")
-	public ResponseEntity<String> authenticateCustomer(@RequestBody Customer input) {
+	public ResponseEntity<JwtInfo> authenticateCustomer(@RequestBody Customer input) {
 		Customer authenticatedUser = authService.authenticate(input);
 		if (!customerService.checkCustomerType(authenticatedUser, RoleType.CUSTOMER.name())) {
 			throw new UserTypeErrorException("User is not customer. Please use admin login");
 		}
 
 		String jwtToken = jwtService.generateToken(authenticatedUser);
-		return new ResponseEntity<>(jwtToken, HttpStatus.CREATED);
+		JwtInfo info = new JwtInfo(jwtToken);
+		return new ResponseEntity<>(info, HttpStatus.CREATED);
 	}
 
 	
