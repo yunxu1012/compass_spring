@@ -1,9 +1,6 @@
 package com.example.demo.security;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +15,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-
-import java.io.IOException;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -84,8 +84,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
+        } catch(ExpiredJwtException ex) {
+        	handleExpiredException(response, ex);
         } catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
+    }
+
+    private void handleExpiredException(HttpServletResponse response, ExpiredJwtException ex) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 status code
+        response.setContentType("application/json");
+        // You can return a JSON object with a specific error message
+        String jsonResponse = "{\"status\": 401, \"error\": \"Unauthorized\", \"message\": \"JWT token expired\"}";
+        response.getWriter().write(jsonResponse);
     }
 }
