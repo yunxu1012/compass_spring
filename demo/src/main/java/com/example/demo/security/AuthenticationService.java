@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.exception.AlreadyExistsException;
-import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.UserPasswordException;
 import com.example.demo.repository.CustomerRepository;
 
 @Service
@@ -47,7 +47,7 @@ public class AuthenticationService {
 			authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
 		} catch (BadCredentialsException e) {
-			throw new UserNotFoundException("Username or password not correct");
+			throw new UserPasswordException("Username or password not correct");
 		}
 
 		return userRepository.findByEmail(input.getEmail()).orElseThrow();
