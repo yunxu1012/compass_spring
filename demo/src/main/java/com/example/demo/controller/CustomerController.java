@@ -58,7 +58,6 @@ public class CustomerController {
 	
 	@PutMapping(path = "customers/{email}")
     public Customer updateCustomer(@PathVariable String email, @RequestBody Customer customer) {
-		   logger.info("Update customer!!!!\n\n");
            Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
            if(optionalCustomer.isPresent()) {
         	   Customer existingCustomer = optionalCustomer.get();
@@ -72,12 +71,6 @@ public class CustomerController {
            }
     }
 	
-	
-	@GetMapping(path = "/customers")
-	public ResponseEntity<List<Customer>> getCustomerList() {
-        List<Customer> customers = customerRepository.findAll();
-		return new ResponseEntity<>(customers, HttpStatus.OK);
-	}
 
 
 }

@@ -32,6 +32,9 @@ public class Customer implements UserDetails {
 	private String lastName;
 	private String email;
 	private String phoneNumber;
+	private boolean isDemo;
+	@Transient
+	private String realEmail;
 	@OneToOne
 	@PrimaryKeyJoinColumn
 	private CustomerPreference preference;
@@ -40,13 +43,15 @@ public class Customer implements UserDetails {
 		super();
 	}
 
-	public Customer(Integer customerId, String password, String firstName, String lastName, String phoneNumber) {
+	public Customer(Integer customerId, String password, String firstName, String lastName, 
+			String phoneNumber, boolean isDemo) {
 		super();
 		this.customerId = customerId;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
+		this.isDemo = isDemo;
 	}
 
 	public Integer getCustomerId() {
@@ -100,10 +105,32 @@ public class Customer implements UserDetails {
 	public CustomerPreference getPreference() {
 		return preference;
 	}
+	
+	
 
 	/*public void setPerference(CustomerPreference perference) {
 		this.perference = perference;
 	}*/
+
+	public boolean isDemo() {
+		return isDemo;
+	}
+
+	public void setDemo(boolean isDemo) {
+		this.isDemo = isDemo;
+	}
+
+	public String getRealEmail() {
+		return realEmail;
+	}
+
+	public void setRealEmail(String realEmail) {
+		this.realEmail = realEmail;
+	}
+
+
+
+
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "customer_role", joinColumns = @JoinColumn(name = "customerId"), 

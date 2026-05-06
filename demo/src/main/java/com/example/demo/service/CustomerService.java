@@ -75,7 +75,41 @@ public class CustomerService {
 
 	}
 	
+	public void hideCustomer(Customer customer) {
+		customer.setRealEmail(customer.getEmail());
+		customer.setFirstName(hideName(customer.getFirstName()));
+		customer.setLastName(hideName(customer.getLastName()));
+		customer.setEmail(hideEmail(customer.getEmail()));
+		customer.setPhoneNumber(hidePhoneNumber(customer.getPhoneNumber()));
+	}
 	
+	private String hideName(String name) {
+		if(name.length()<=2) {
+			return name;
+		}
+		int number = name.length()-2;
+		String replace = "*".repeat(number);
+		StringBuilder bu = new StringBuilder(name);
+		return bu.replace(2,name.length(),replace).toString();
+	}
+	
+	private String hideEmail(String email) {
+		String[] arr = email.split("@");
+		for(int i=0; i<arr.length; i++) {
+			arr[i] = hideName(arr[i]);
+		}
+		return arr[0]+"@"+arr[1];
+	}
+	
+	private String hidePhoneNumber(String phone) {
+		if(phone.length()<=6) {
+			return phone;
+		}
+		int num = phone.length()-6;
+		String replace = "*".repeat(num);
+		StringBuilder bu = new StringBuilder(phone);
+		return bu.replace(3,phone.length()-3,replace).toString();
+	}
 
 
 }
