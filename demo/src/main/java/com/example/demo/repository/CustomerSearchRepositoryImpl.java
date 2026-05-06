@@ -39,7 +39,8 @@ public class CustomerSearchRepositoryImpl {
 		                  + " and c.customer_id in (select customer_id from customer_city "
 		                  + " where city_id = :cityId) "
 		                  + " and c.customer_id in (select customer_id from customer_hometype "
-		                  + " where hometype = CAST(:hometype AS hometype)) ";
+		                  + " where hometype = CAST(:hometype AS hometype)) "
+		                  + " order by lower(c.first_name) ";
 				Query query = em.createNativeQuery(sql);
 						List<Object[]> objects = query
 						  .setParameter("price", search.getPrice())
