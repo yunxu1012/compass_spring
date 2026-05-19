@@ -25,15 +25,12 @@ import com.example.demo.entity.RoleType;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.CustomerSearchRepositoryImpl;
-import com.example.demo.security.AuthenticationService;
 import com.example.demo.service.CustomerService;
 
 @CrossOrigin(origins ="*")
 @RestController
 @RequestMapping(path = "/api")
 public class AdminController {
-	 @Autowired
-     private AuthenticationService authService;
 	 @Autowired
 	 private CustomerSearchRepositoryImpl searchImpl;
 	 @Autowired

@@ -35,6 +35,8 @@ public class Customer implements UserDetails {
 	private boolean isDemo;
 	@Transient
 	private String realEmail;
+	@Transient
+	private String code;
 	@OneToOne
 	@PrimaryKeyJoinColumn
 	private CustomerPreference preference;
@@ -43,15 +45,31 @@ public class Customer implements UserDetails {
 		super();
 	}
 
-	public Customer(Integer customerId, String password, String firstName, String lastName, 
+	public Customer(Integer customerId, String password, String firstName, String lastName, String email,
 			String phoneNumber, boolean isDemo) {
 		super();
 		this.customerId = customerId;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.isDemo = isDemo;
+	}
+	
+	
+
+	public Customer(Integer customerId, String password, String firstName, String lastName, 
+			String email, String phoneNumber, boolean isDemo, String code) {
+		super();
+		this.customerId = customerId;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.isDemo = isDemo;
+		this.code = code;
 	}
 
 	public Integer getCustomerId() {
@@ -111,6 +129,14 @@ public class Customer implements UserDetails {
 	/*public void setPerference(CustomerPreference perference) {
 		this.perference = perference;
 	}*/
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public boolean isDemo() {
 		return isDemo;

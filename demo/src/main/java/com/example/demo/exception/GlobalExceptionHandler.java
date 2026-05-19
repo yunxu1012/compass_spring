@@ -33,7 +33,13 @@ public class GlobalExceptionHandler {
 	}
 	
 	@ExceptionHandler
-	public ResponseEntity<Object> handleAuthenticationException(TokenExpiredException e) {
+	public ResponseEntity<Object> handleTokenExpiredException(TokenExpiredException e) {
+		// do what you want with e
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler
+	public ResponseEntity<Object> handleEmailCodeException(EmailCodeException e) {
 		// do what you want with e
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
 	}
