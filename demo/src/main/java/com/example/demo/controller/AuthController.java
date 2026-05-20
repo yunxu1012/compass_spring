@@ -53,35 +53,21 @@ public class AuthController {
 	private JwtService jwtService;
 	@Autowired
 	CustomerService customerService;
-	private static int CODE_EXPIRE_MINUTES=10;
-	
+	private static int CODE_EXPIRE_MINUTES = 10;
+
 	@Autowired
 	MailService mailService;
 	@Autowired
 	EmailCodeRepository emailCodeRepository;
-	
+
 	Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 	@PostMapping("/auth/customer/signup")
 	public Customer createCustomer(@RequestBody Customer customer) {
 		// return customerRepository.save(customer);
-		Optional<EmailCode> op = emailCodeRepository.findById(customer.getEmail());
-        if(op.isEmpty()) {
-        	throw new EmailCodeException("Code Not Found");
-        }else {
-        	EmailCode eCode = op.get();
-        	if(!eCode.getCode().equals(customer.getCode())) {
-        		throw new EmailCodeException("Code Not Correct");
-        	}
-        	LocalDateTime now = LocalDateTime.now();
-        	if(now.isAfter(eCode.getUpdateTime().plusMinutes(1))){
-        		throw new EmailCodeException("Code Is Expired");
-        	}
-        }
+		checkEmailCode(customer.getEmail(), customer.getCode());
 		Customer created = authService.signup(customer);
-		logger.info("customer created");
 		Role role = roleRepository.findByName(RoleType.CUSTOMER.name());
-		logger.info("role: " + role.getRoleId());
 		CustomerRole cr = new CustomerRole(customer.getCustomerId(), role.getRoleId());
 		customerRoleRepository.save(cr);
 		created.setPassword("******");
@@ -123,79 +109,73 @@ public class AuthController {
 	}
 
 	@GetMapping(path = "/auth/registerCode")
-	public ResponseEntity<String> sendRegisterMail(@RequestParam("email") String email, @RequestParam("firstTime") boolean firstTime) {
-        if(firstTime) {
-        	Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
-            if(optionalCustomer.isPresent()) {
-         	   throw new AlreadyExistsException("Email already used.");
-            }
-        }
-        Random rnd = new Random();
-        // Generates a number from 0 to 899,999, then adds 100,000
-        int number = 100000 + rnd.nextInt(900000);
-        String body = "Your security code is: "+ number;
-        mailService.sendPlainText(email,"Your Security Code", body);
-        LocalDateTime time = LocalDateTime.now();
-        EmailCode code = new EmailCode(email, String.valueOf(number), time);
-        emailCodeRepository.save(code);
+	public ResponseEntity<String> sendRegisterMail(@RequestParam("email") String email,
+			@RequestParam("firstTime") boolean firstTime) {
+		if (firstTime) {
+			Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+			if (optionalCustomer.isPresent()) {
+				throw new AlreadyExistsException("Email already used.");
+			}
+		}
+		sendCodeEmail(email);
 		return new ResponseEntity<>("{\"status\": \"success\"}", HttpStatus.OK);
 	}
-	
+
 	@GetMapping(path = "/auth/sendCode")
-	public ResponseEntity<String> sendMail(@RequestParam("email") String email, @RequestParam("firstTime") boolean firstTime) {
-        if(firstTime) {
-        	Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
-            if(optionalCustomer.isEmpty()) {
-         	   throw new UserNotFoundException("Email not found.");
-            }
-        }
-        Random rnd = new Random();
-        // Generates a number from 0 to 899,999, then adds 100,000
-        int number = 100000 + rnd.nextInt(900000);
-        String body = "Your security code is: "+ number;
-        mailService.sendPlainText(email,"Your Security Code", body);
-        LocalDateTime time = LocalDateTime.now();
-        EmailCode code = new EmailCode(email, String.valueOf(number), time);
-        emailCodeRepository.save(code);
+	public ResponseEntity<String> sendMail(@RequestParam("email") String email,
+			@RequestParam("firstTime") boolean firstTime) {
+		if (firstTime) {
+			Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+			if (optionalCustomer.isEmpty()) {
+				throw new UserNotFoundException("Email not found.");
+			}
+		}
+		sendCodeEmail(email);
 		return new ResponseEntity<>("{\"status\": \"success\"}", HttpStatus.OK);
 	}
-	
-	@GetMapping(path = "/auth/checkCode")
-	public ResponseEntity<String> checkCode(@RequestParam("email") String email, @RequestParam("code") String code) {     
-        checkEmailCode(email, code);
-		return new ResponseEntity<>("{\"status\": \"success\"}", HttpStatus.OK);
+
+	private void sendCodeEmail(String email) {
+		Random rnd = new Random();
+		// Generates a number from 0 to 899,999, then adds 100,000
+		int number = 100000 + rnd.nextInt(900000);
+		String body = "Your security code is: " + number;
+		mailService.sendPlainText(email, "Your Security Code", body);
+		LocalDateTime time = LocalDateTime.now();
+		EmailCode code = new EmailCode(email, String.valueOf(number), time);
+		emailCodeRepository.save(code);
 	}
-	
+
 	@PostMapping("/auth/customer/resetPassword")
 	public Customer resetPassword(@RequestBody ResetPassword reset) {
 		logger.info("reset password");
-        checkEmailCode(reset.getEmail(), reset.getCode());
+		checkEmailCode(reset.getEmail(), reset.getCode());
 		Optional opt = customerRepository.findByEmail(reset.getEmail());
-	
-		if(opt.isEmpty()) {
+
+		if (opt.isEmpty()) {
 			throw new UserNotFoundException("Customer Not Found");
-		}else {
-			Customer customer =(Customer) opt.get();
+		} else {
+			Customer customer = (Customer) opt.get();
 			customer.setPassword(reset.getPassword());
-			customerRepository.save(customer);
+			authService.resetPassword(customer);
+			customer.setPassword("*****");
 			return customer;
 		}
 	}
-	
+
 	private void checkEmailCode(String email, String code) {
-		 Optional<EmailCode> op = emailCodeRepository.findById(email);
-	        if(op.isEmpty()) {
-	        	throw new EmailCodeException("Code not found for email: "+email);
-	        }else {
-	        	EmailCode eCode = op.get();
-	        	if(!eCode.getCode().equals(code)) {
-	        		throw new EmailCodeException("Code not correct.");
-	        	}
-	        	LocalDateTime now = LocalDateTime.now();
-	        	if(now.isAfter(eCode.getUpdateTime().plusMinutes(CODE_EXPIRE_MINUTES))){
-	        		throw new EmailCodeException("Code is expired.");
-	        	}
-	        }
+		Optional<EmailCode> op = emailCodeRepository.findById(email);
+		if (op.isEmpty()) {
+			throw new EmailCodeException("Code not found for email: " + email);
+		} else {
+			EmailCode eCode = op.get();
+			if (!eCode.getCode().equals(code)) {
+				throw new EmailCodeException("Code not correct.");
+			}
+			LocalDateTime now = LocalDateTime.now();
+			if (now.isAfter(eCode.getUpdateTime().plusMinutes(CODE_EXPIRE_MINUTES))) {
+				throw new EmailCodeException("Code is expired.");
+			}
+		}
 	}
 
 }

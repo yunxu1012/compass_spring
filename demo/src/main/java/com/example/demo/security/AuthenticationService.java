@@ -40,6 +40,12 @@ public class AuthenticationService {
 		customer.setPassword(passEncode);
 		return userRepository.save(customer);
 	}
+	
+	public Customer resetPassword(Customer customer) {
+		String passEncode = passwordEncoder.encode(customer.getPassword());
+		customer.setPassword(passEncode);
+		return userRepository.save(customer);
+	}
 
 	public Customer authenticate(Customer input) {
 
