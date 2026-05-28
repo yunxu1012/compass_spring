@@ -46,9 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-    	 logger.info("start herer001!!!!: ");
         final String authHeader = request.getHeader("Authorization");
-        logger.info("authHeader!!!!: "+authHeader);
+        logger.info("authHeader: "+authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -57,19 +56,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
-            logger.info("JWT!!!!: "+jwt);
             final String userEmail = jwtService.extractUsername(jwt);
             
-            logger.info("userEmail!!!!: "+userEmail);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            logger.info("authenticatio!!!!: "+(authentication == null));
+            logger.info("authenticatio is null: "+(authentication == null));
 
             if (userEmail != null && authentication == null) {
-            	logger.info("BEFORE VALID!!!!: ");
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                	logger.info("TOKEN VALID001!!!!: ");
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

@@ -31,11 +31,15 @@ CREATE SEQUENCE customer_hometype_seq
 START WITH 1
 INCREMENT BY 50;
 
+CREATE SEQUENCE scheduled_task_seq
+START WITH 1
+INCREMENT BY 50;
+
 CREATE TYPE hometype AS ENUM ('HOUSE', 'TOWNHOUSE', 'CONDO', 'MULTI_FAMILY', 'CO_OP', 'LAND','MOBILE', 'OTHER');
 CREATE TYPE bedcount AS ENUM ('0', '1','2','3','4','5','100');
 CREATE TYPE bathcount as ENUM ('1','1.5','2','2.5','3','4','100');
 CREATE TYPE roletype as ENUM('CUSTOMER', 'ADMIN');
-
+CREATE TYPE statustype AS ENUM ('PENDING', 'REJECTED','APPROVED','EXPIRED', 'CANCELED','DONE');
 
 create table customer_preference(
 customer_id integer primary key references customer, 
@@ -122,3 +126,19 @@ code varchar not null,
 update_time timestamp not null
 );
 
+create table scheduled_task(
+	id bigint primary key,
+	customer_id integer,
+	task_date date,
+	start_time time,
+	address varchar not null,
+	city varchar not null,
+	state varchar not null,
+	zipcode varchar,
+	comment varchar, 
+	status statustype,
+	CONSTRAINT fk_schedule_task_customer_ref
+        FOREIGN KEY (customer_id)
+        REFERENCES customer (customer_id)
+        ON DELETE CASCADE
+);

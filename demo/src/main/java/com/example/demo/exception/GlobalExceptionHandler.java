@@ -43,5 +43,17 @@ public class GlobalExceptionHandler {
 		// do what you want with e
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<Object> handleNotFoundException(NotFoundException e) {
+		// do what you want with e
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<Object> handleUserRightsException(UserRightsException e) {
+		// do what you want with e
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+	}
 
 }
