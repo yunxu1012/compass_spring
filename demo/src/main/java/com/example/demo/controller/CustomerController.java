@@ -159,5 +159,26 @@ public class CustomerController {
 	
 	
 
+	@GetMapping("/customers/{email}/tasks/{taskId}")
+    public ResponseEntity<ScheduledTask> getTaskForCustomer(@PathVariable String email, @PathVariable Long taskId) {
+		logger.info("cancel task here!!\n\n");
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<ScheduledTask> op = scheduledTaskRepository.findById(taskId);
+        if(optionalCustomer.isPresent()) {
+     	   Customer customer =  optionalCustomer.get();
+     	   if(op.isPresent()) {
+     	   ScheduledTask task = op.get();
+     	   if(!task.getCustomerId().equals(customer.getCustomerId())){
+     		  throw new UserNotFoundException("User have no rights to see the appoitment: ");
+     	   }
+     	   return new ResponseEntity<>(task, HttpStatus.OK);
+     	   }else {
+     		  throw new UserNotFoundException("Task Not found: ");
+     	   }
+        }else {
+     	   throw new UserNotFoundException("Customer not found for: "
+        +email);
+        }
+    }
 
 }

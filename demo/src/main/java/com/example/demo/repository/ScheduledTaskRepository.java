@@ -18,7 +18,7 @@ public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Lo
 	
 
 	@Query(value = "SELECT * FROM Scheduled_Task s where s.task_date >= :startDate "
-			+ " and  customer_id =:customerId", nativeQuery = true)
+			+ " and  customer_id =:customerId and status in ('PENDING', 'APPROVED', 'REJECTED')", nativeQuery = true)
 	public List<ScheduledTask> findTasksForCustomer(LocalDate startDate, 
 		 Integer customerId);
 	
