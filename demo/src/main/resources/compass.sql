@@ -136,6 +136,8 @@ create table scheduled_task(
 	state varchar not null,
 	zipcode varchar,
 	comment varchar, 
+	note varchar,
+	agent varchar,
 	status statustype,
 	CONSTRAINT fk_schedule_task_customer_ref
         FOREIGN KEY (customer_id)

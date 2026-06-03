@@ -86,7 +86,7 @@ public class CustomerController {
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
         if(optionalCustomer.isPresent()) {
      	   Customer customer =  optionalCustomer.get();
-     	  List<Schedule> list =taskService.getSchedules();
+     	  List<Schedule> list =taskService.getSchedules(customer.getCustomerId());
      	  logger.info("list size: "+list.size());
      	   return new ResponseEntity<>(list, HttpStatus.OK);
         }else {
@@ -124,7 +124,7 @@ public class CustomerController {
      		   task.setStartTime(startTime);
      	   }
      	  task.setStatus(StatusType.PENDING);
-     	   scheduledTaskRepository.save(task);
+     	 taskService.createTask(task);
      	   return new ResponseEntity<>("{\"status\": \"success\"}", HttpStatus.OK);
         }else {
      	   throw new UserNotFoundException("Customer not found for: "

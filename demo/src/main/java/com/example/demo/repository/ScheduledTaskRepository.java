@@ -10,11 +10,10 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.demo.entity.ScheduledTask;
 
 public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Long> {
-	@Query(value = "SELECT * FROM Scheduled_Task s where s.task_date >= :startDate "
-			+ " and s.start_time >= :startTime and  s.task_date <= :endDate "
-			+ " and s.start_time <= :endTime ", nativeQuery = true)
-	public List<ScheduledTask> findTasks(LocalDate startDate, LocalTime startTime,
-			LocalDate endDate, LocalTime endTime);
+	@Query(value = "SELECT * FROM Scheduled_Task s where "
+			+ " s.task_date >= :startDate ", nativeQuery = true)
+	public List<ScheduledTask> findTasks(LocalDate startDate
+			);
 	
 
 	@Query(value = "SELECT * FROM Scheduled_Task s where s.task_date >= :startDate "
@@ -22,4 +21,7 @@ public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Lo
 	public List<ScheduledTask> findTasksForCustomer(LocalDate startDate, 
 		 Integer customerId);
 	
+	@Query(value = "SELECT s.agent FROM Scheduled_Task s where s.task_date = :startDate "
+			+ " and s.start_time =:startTime and status in ('APPROVED')", nativeQuery = true)
+	public List<String> findAgentsForDateTime(LocalDate startDate, LocalTime startTime);
 }

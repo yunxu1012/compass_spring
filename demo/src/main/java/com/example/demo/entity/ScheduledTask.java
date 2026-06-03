@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.hibernate.annotations.ColumnTransformer;
 
@@ -24,6 +25,12 @@ public class ScheduledTask {
 	private Long id;
 	
 	private Integer customerId;
+	
+	@Transient
+	private String customerEmail;
+	
+	@Transient
+	private String customerName;
 
 	@Enumerated(EnumType.STRING)
 	@ColumnTransformer(write = "?::statustype")
@@ -44,8 +51,15 @@ public class ScheduledTask {
 	
 	private String comment;
 	
+	private String agent;
+	
+	private String note;
+	
 	@Transient
 	private String taskTime;
+	
+	@Transient
+	private List<String> agentList;
 
    
 	
@@ -85,6 +99,26 @@ public class ScheduledTask {
 		this.customerId = customerId;
 	}
 
+
+
+	public String getCustomerEmail() {
+		return customerEmail;
+	}
+
+
+	public void setCustomerEmail(String customerEmail) {
+		this.customerEmail = customerEmail;
+	}
+
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 
 
 	public StatusType getStatus() {
@@ -177,6 +211,38 @@ public class ScheduledTask {
 		this.comment = comment;
 	}
 
+
+	public String getAgent() {
+		return agent;
+	}
+
+
+	public void setAgent(String agent) {
+		this.agent = agent;
+	}
+
+
+	public String getNote() {
+		return note;
+	}
+
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+
+	public List<String> getAgentList() {
+		return agentList;
+	}
+
+
+	public void setAgentList(List<String> agentList) {
+		this.agentList = agentList;
+	}
+
+	
+	
 	
   
   

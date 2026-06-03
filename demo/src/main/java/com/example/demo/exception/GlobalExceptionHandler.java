@@ -55,5 +55,12 @@ public class GlobalExceptionHandler {
 		// do what you want with e
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<Object> handleTaskNotAvailableExceptio(TaskNotAvailableException e) {
+		// do what you want with e
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+	}
+	
 
 }
