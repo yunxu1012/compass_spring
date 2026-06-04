@@ -11,7 +11,7 @@ import com.example.demo.entity.ScheduledTask;
 
 public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Long> {
 	@Query(value = "SELECT * FROM Scheduled_Task s where "
-			+ " s.task_date >= :startDate ", nativeQuery = true)
+			+ " s.task_date >= :startDate and status in ('PENDING', 'APPROVED')", nativeQuery = true)
 	public List<ScheduledTask> findTasks(LocalDate startDate
 			);
 	

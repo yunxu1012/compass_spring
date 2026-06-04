@@ -132,9 +132,21 @@ public class CustomerController {
         }
     }
 	
+	@PutMapping("/customers/{email}/tasks/{taskId}/done")
+    public ResponseEntity finishTask(@PathVariable String email, @PathVariable Long taskId) {
+		logger.info("cancel task here!!\n\n");
+		ScheduledTask task = changeTaskStatus(email, taskId,StatusType.DONE);
+		return new ResponseEntity<>(task, HttpStatus.OK);
+    }
+	
 	@PutMapping("/customers/{email}/tasks/{taskId}/cancel")
     public ResponseEntity cancelTask(@PathVariable String email, @PathVariable Long taskId) {
 		logger.info("cancel task here!!\n\n");
+		ScheduledTask task = changeTaskStatus(email, taskId,StatusType.CANCELED);
+		return new ResponseEntity<>(task, HttpStatus.OK);
+    }
+	
+	private ScheduledTask changeTaskStatus(String email, Long taskId, StatusType type) {
 		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
 		Optional<ScheduledTask> op = scheduledTaskRepository.findById(taskId);
         if(optionalCustomer.isPresent()) {
@@ -144,10 +156,10 @@ public class CustomerController {
      	   if(!task.getCustomerId().equals(customer.getCustomerId())){
      		  throw new UserNotFoundException("User have no rights to change the task: ");
      	   }
-     	  task.setStatus(StatusType.CANCELED);
+     	  task.setStatus(type);
      	  
      	   scheduledTaskRepository.save(task);
-     	   return new ResponseEntity<>("{\"status\": \"success\"}", HttpStatus.OK);
+     	   return task;
      	   }else {
      		  throw new UserNotFoundException("Task Not found: ");
      	   }
@@ -155,8 +167,7 @@ public class CustomerController {
      	   throw new UserNotFoundException("Customer not found for: "
         +email);
         }
-    }
-	
+	}
 	
 
 	@GetMapping("/customers/{email}/tasks/{taskId}")
