@@ -59,11 +59,11 @@ public class TaskService {
 			List<String> list = new ArrayList<String>();
 			for (int m = 0; m < timeList.size(); m++) {
 				LocalTime start = (LocalTime) timeList.get(m);
-				if (timeScheduled(tasks, date, start,customerId)) {
+				if (timeScheduled(tasks, date, start, customerId)) {
 					continue;
 				}
-				List already = alreadyScheduledAgent(date,start);
-				if(already.size()>=this.agentList.size()) {
+				List already = alreadyScheduledAgent(date, start);
+				if (already.size() >= this.agentList.size()) {
 					continue;
 				}
 				LocalTime end = start.plusHours(1);
@@ -79,12 +79,15 @@ public class TaskService {
 	public List<ScheduledTask> getTasks(Customer customer) {
 		LocalDate now = LocalDate.now();
 		List<ScheduledTask> tasks = scheduledTaskRepository.findTasksForCustomer(now, customer.getCustomerId());
-
+		if (customer.isDemo()) {
+			for (ScheduledTask task : tasks) {
+				hideTask(task);
+			}
+		}
 		return tasks;
 	}
 
-	private boolean timeScheduled(List<ScheduledTask> list, LocalDate date, LocalTime time,
-			Integer customerId) {
+	private boolean timeScheduled(List<ScheduledTask> list, LocalDate date, LocalTime time, Integer customerId) {
 		for (ScheduledTask task : list) {
 			if (task.getTaskDate().equals(date) && task.getStartTime().equals(time)
 					&& task.getCustomerId().equals(customerId)) {
@@ -100,11 +103,12 @@ public class TaskService {
 
 			if (op.isPresent()) {
 				ScheduledTask task = op.get();
+				hideTask(task);
 				Optional<Customer> custOp = customerRepository.findById(task.getCustomerId());
 				if (custOp.isPresent()) {
 					Customer cust = (Customer) custOp.get();
-					task.setCustomerName(cust.getFirstName() + " " + cust.getLastName());
-					task.setCustomerEmail(cust.getEmail());
+					task.setCustomerName(hideField(cust.getFirstName()) + " " + hideField(cust.getLastName()));
+					task.setCustomerEmail(hideEmail(cust.getEmail()));
 					if (task.getStatus().equals(StatusType.PENDING)) {
 						List<String> agents = new ArrayList<String>();
 						List<String> already = alreadyScheduledAgent(task.getTaskDate(), task.getStartTime());
@@ -131,14 +135,42 @@ public class TaskService {
 	private List<String> alreadyScheduledAgent(LocalDate taskDate, LocalTime time) {
 		return scheduledTaskRepository.findAgentsForDateTime(taskDate, time);
 	}
-	
+
 	public synchronized void createTask(ScheduledTask task) {
-		List already = alreadyScheduledAgent(task.getTaskDate(),task.getStartTime());
-		if(already.size()>=this.agentList.size()) {
-			throw new TaskNotAvailableException("The time slot already occupied: "+
-		task.getTaskDate()+" "+task.getStartTime());
+		List already = alreadyScheduledAgent(task.getTaskDate(), task.getStartTime());
+		if (already.size() >= this.agentList.size()) {
+			throw new TaskNotAvailableException(
+					"The time slot already occupied: " + task.getTaskDate() + " " + task.getStartTime());
 		}
 		scheduledTaskRepository.save(task);
+	}
+
+	public void hideTask(ScheduledTask task) {
+		try {
+			task.setAddress(hideField(task.getAddress()));
+			task.setComment(hideField(task.getComment()));
+			task.setNote(hideField(task.getNote()));
+		} catch (Exception e) {
+			logger.info("error!!!!: " + e.getMessage());
+		}
+	}
+
+	public String hideField(String field) {
+		if (field==null || field.length() <= 2) {
+			return field;
+		}
+		int number = field.length() - 2;
+		String replace = "*".repeat(number);
+		StringBuilder bu = new StringBuilder(field);
+		return bu.replace(2, field.length(), replace).toString();
+	}
+
+	private String hideEmail(String email) {
+		String[] arr = email.split("@");
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = hideField(arr[i]);
+		}
+		return arr[0] + "@" + arr[1];
 	}
 
 }

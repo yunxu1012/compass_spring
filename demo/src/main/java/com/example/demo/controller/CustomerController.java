@@ -182,6 +182,9 @@ public class CustomerController {
      	   if(!task.getCustomerId().equals(customer.getCustomerId())){
      		  throw new UserNotFoundException("User have no rights to see the appoitment: ");
      	   }
+     	  if(customer.isDemo()) {
+          	  taskService.hideTask(task);	
+          }
      	   return new ResponseEntity<>(task, HttpStatus.OK);
      	   }else {
      		  throw new UserNotFoundException("Task Not found: ");

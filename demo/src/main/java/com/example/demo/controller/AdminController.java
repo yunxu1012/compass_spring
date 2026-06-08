@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entity.City;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerSearch;
+import com.example.demo.entity.JwtInfo;
 import com.example.demo.entity.RoleType;
 import com.example.demo.entity.ScheduledTask;
 import com.example.demo.exception.UserNotFoundException;
@@ -118,4 +119,5 @@ public class AdminController {
 		}
            return task;
     }
+	
 }
