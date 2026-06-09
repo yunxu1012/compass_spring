@@ -76,9 +76,9 @@ public class AdminController {
 		return new ResponseEntity<>(realCustomers, HttpStatus.OK);
 	}
 
-	@GetMapping("/admin/customers/{email}")
-	public Customer getCustomer(@PathVariable String email) {
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+	@GetMapping("/admin/customers/{customerId}")
+	public Customer getCustomer(@PathVariable Integer customerId) {
+		Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
 		if (optionalCustomer.isPresent()) {
 			Customer customer = optionalCustomer.get();
 			if (customer.getPreference() != null) {
@@ -90,7 +90,7 @@ public class AdminController {
 			customerService.hideCustomer(customer);
 			return customer;
 		} else {
-			throw new UserNotFoundException("Customer not found for: " + email);
+			throw new UserNotFoundException("Customer not found for: " + customerId);
 		}
 	}
 

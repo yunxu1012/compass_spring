@@ -92,7 +92,8 @@ public class AuthController {
 			throw new UserTypeErrorException("User is not admin. Please use customer login");
 		}
 		String jwtToken = jwtService.generateToken(authenticatedUser);
-		JwtInfo info = new JwtInfo(jwtToken);
+		String name = authenticatedUser.getFirstName()+" "+ authenticatedUser.getLastName();
+		JwtInfo info = new JwtInfo(jwtToken, name);
 		return new ResponseEntity<>(info, HttpStatus.CREATED);
 	}
 
@@ -104,7 +105,8 @@ public class AuthController {
 		}
 
 		String jwtToken = jwtService.generateToken(authenticatedUser);
-		JwtInfo info = new JwtInfo(jwtToken);
+		String name = authenticatedUser.getFirstName()+" "+ authenticatedUser.getLastName();
+		JwtInfo info = new JwtInfo(jwtToken, name);
 		return new ResponseEntity<>(info, HttpStatus.CREATED);
 	}
 

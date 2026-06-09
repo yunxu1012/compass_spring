@@ -34,8 +34,6 @@ public class Customer implements UserDetails {
 	private String phoneNumber;
 	private boolean isDemo;
 	@Transient
-	private String realEmail;
-	@Transient
 	private String code;
 	@OneToOne
 	@PrimaryKeyJoinColumn
@@ -145,17 +143,6 @@ public class Customer implements UserDetails {
 	public void setDemo(boolean isDemo) {
 		this.isDemo = isDemo;
 	}
-
-	public String getRealEmail() {
-		return realEmail;
-	}
-
-	public void setRealEmail(String realEmail) {
-		this.realEmail = realEmail;
-	}
-
-
-
 
 
 	@ManyToMany(fetch = FetchType.EAGER)

@@ -76,7 +76,7 @@ public class CustomerService {
 	}
 	
 	public void hideCustomer(Customer customer) {
-		customer.setRealEmail(customer.getEmail());
+		//customer.setRealEmail(customer.getEmail());
 		customer.setFirstName(hideName(customer.getFirstName()));
 		customer.setLastName(hideName(customer.getLastName()));
 		customer.setEmail(hideEmail(customer.getEmail()));
