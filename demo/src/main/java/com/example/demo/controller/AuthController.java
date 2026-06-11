@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.CodeTime;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerRole;
 import com.example.demo.entity.EmailCode;
@@ -53,7 +54,7 @@ public class AuthController {
 	private JwtService jwtService;
 	@Autowired
 	CustomerService customerService;
-	private static int CODE_EXPIRE_MINUTES = 10;
+	private static int CODE_EXPIRE_MINUTES = 30;
 
 	@Autowired
 	MailService mailService;
@@ -124,7 +125,7 @@ public class AuthController {
 	}
 
 	@GetMapping(path = "/auth/sendCode")
-	public ResponseEntity<String> sendMail(@RequestParam("email") String email,
+	public ResponseEntity<CodeTime> sendMail(@RequestParam("email") String email,
 			@RequestParam("firstTime") boolean firstTime) {
 		if (firstTime) {
 			Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
@@ -133,7 +134,9 @@ public class AuthController {
 			}
 		}
 		sendCodeEmail(email);
-		return new ResponseEntity<>("{\"status\": \"success\"}", HttpStatus.OK);
+		LocalDateTime time = LocalDateTime.now();
+		CodeTime codeTime= new CodeTime(time);
+		return new ResponseEntity<>(codeTime, HttpStatus.OK);
 	}
 
 	private void sendCodeEmail(String email) {
