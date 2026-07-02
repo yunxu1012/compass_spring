@@ -48,7 +48,7 @@ public class CustomerController {
 
 	@GetMapping("/customers/{email}")
     public Customer getCustomer(@PathVariable String email) {
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
         if(optionalCustomer.isPresent()) {
      	   Customer customer =  optionalCustomer.get();
      	   if(customer.getPreference()!=null) {
@@ -66,7 +66,7 @@ public class CustomerController {
 	
 	@PutMapping(path = "customers/{email}")
     public Customer updateCustomer(@PathVariable String email, @RequestBody Customer customer) {
-           Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+           Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
            if(optionalCustomer.isPresent()) {
         	   Customer existingCustomer = optionalCustomer.get();
         	   existingCustomer.setLastName(customer.getLastName());
@@ -83,7 +83,7 @@ public class CustomerController {
 	@GetMapping("/customers/{email}/schedules")
     public ResponseEntity<List<Schedule>> getTasks(@PathVariable String email) {
 		logger.info("get schedules here!!\n\n");
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
         if(optionalCustomer.isPresent()) {
      	   Customer customer =  optionalCustomer.get();
      	  List<Schedule> list =taskService.getSchedules(customer.getCustomerId());
@@ -98,7 +98,7 @@ public class CustomerController {
 	@GetMapping("/customers/{email}/tasks")
     public ResponseEntity<List<ScheduledTask>> getSchedules(@PathVariable String email) {
 		logger.info("get tasks here!!\n\n");
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
         if(optionalCustomer.isPresent()) {
      	   Customer customer =  optionalCustomer.get();
      	   List<ScheduledTask> tasks = taskService.getTasks(customer);
@@ -112,7 +112,7 @@ public class CustomerController {
 	
 	@PostMapping("/customers/{email}/tasks")
     public ResponseEntity createTask(@PathVariable String email, @RequestBody ScheduledTask task) {
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
         if(optionalCustomer.isPresent()) {
      	   Customer customer =  optionalCustomer.get();
      	   task.setCustomerId(customer.getCustomerId());
@@ -135,19 +135,19 @@ public class CustomerController {
 	@PutMapping("/customers/{email}/tasks/{taskId}/done")
     public ResponseEntity finishTask(@PathVariable String email, @PathVariable Long taskId) {
 		logger.info("cancel task here!!\n\n");
-		ScheduledTask task = changeTaskStatus(email, taskId,StatusType.DONE);
+		ScheduledTask task = changeTaskStatus(email.toLowerCase(), taskId,StatusType.DONE);
 		return new ResponseEntity<>(task, HttpStatus.OK);
     }
 	
 	@PutMapping("/customers/{email}/tasks/{taskId}/cancel")
     public ResponseEntity cancelTask(@PathVariable String email, @PathVariable Long taskId) {
 		logger.info("cancel task here!!\n\n");
-		ScheduledTask task = changeTaskStatus(email, taskId,StatusType.CANCELED);
+		ScheduledTask task = changeTaskStatus(email.toLowerCase(), taskId,StatusType.CANCELED);
 		return new ResponseEntity<>(task, HttpStatus.OK);
     }
 	
 	private ScheduledTask changeTaskStatus(String email, Long taskId, StatusType type) {
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
 		Optional<ScheduledTask> op = scheduledTaskRepository.findById(taskId);
         if(optionalCustomer.isPresent()) {
      	   Customer customer =  optionalCustomer.get();
@@ -173,7 +173,7 @@ public class CustomerController {
 	@GetMapping("/customers/{email}/tasks/{taskId}")
     public ResponseEntity<ScheduledTask> getTaskForCustomer(@PathVariable String email, @PathVariable Long taskId) {
 		logger.info("cancel task here!!\n\n");
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
 		Optional<ScheduledTask> op = scheduledTaskRepository.findById(taskId);
         if(optionalCustomer.isPresent()) {
      	   Customer customer =  optionalCustomer.get();

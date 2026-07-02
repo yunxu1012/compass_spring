@@ -52,7 +52,7 @@ public class CustomerPreferenceController {
 			@RequestBody CustomerPreference customerPreference) {
 		logger.info("Create customer preference!!!");
 		logger.info("Customer Prference: " + customerPreference.toString());
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
 		if (optionalCustomer.isPresent()) {
 			Customer customer = optionalCustomer.get();
 			if (customer.getPreference() != null) {
@@ -84,7 +84,7 @@ public class CustomerPreferenceController {
 	@GetMapping("/customersPreferences/{email}")
 	public CustomerPreference getCustomerPreferene(@PathVariable String email) {
 		logger.info("Select customer preference123!!!");
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
 		if (optionalCustomer.isPresent()) {
 			Customer customer = optionalCustomer.get();
 			CustomerPreference preference = customer.getPreference();
@@ -121,7 +121,7 @@ public class CustomerPreferenceController {
 			@RequestBody CustomerPreference customerPreference) {
 		logger.info("Update customer!!!");
 		logger.info("Customer Prference: " + customerPreference.toString());
-		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+		Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
 		if (optionalCustomer.isPresent()) {
 			Customer existingCustomer = optionalCustomer.get();
 			CustomerPreference existingPreference = existingCustomer.getPreference();

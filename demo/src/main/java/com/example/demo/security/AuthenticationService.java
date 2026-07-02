@@ -31,11 +31,11 @@ public class AuthenticationService {
 	}
 
 	public Customer signup(Customer customer) {
-		Optional<Customer> ex = userRepository.findByEmail(customer.getEmail());
+		Optional<Customer> ex = userRepository.findByEmail(customer.getEmail().toLowerCase());
 		if (ex.isPresent()) {
 			throw new AlreadyExistsException("Email already used.");
 		}
-
+		customer.setEmail(customer.getEmail().toLowerCase());
 		String passEncode = passwordEncoder.encode(customer.getPassword());
 		customer.setPassword(passEncode);
 		return userRepository.save(customer);
@@ -51,12 +51,13 @@ public class AuthenticationService {
 
 		try {
 			authenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
+					.authenticate(new UsernamePasswordAuthenticationToken(
+							input.getEmail().toLowerCase(), input.getPassword()));
 		} catch (BadCredentialsException e) {
 			throw new UserPasswordException("Username or password not correct");
 		}
 
-		return userRepository.findByEmail(input.getEmail()).orElseThrow();
+		return userRepository.findByEmail(input.getEmail().toLowerCase()).orElseThrow();
 	}
 
 }

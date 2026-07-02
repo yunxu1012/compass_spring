@@ -66,7 +66,8 @@ public class AuthController {
 	@PostMapping("/auth/customer/signup")
 	public Customer createCustomer(@RequestBody Customer customer) {
 		// return customerRepository.save(customer);
-		checkEmailCode(customer.getEmail(), customer.getCode());
+		checkEmailCode(customer.getEmail().toLowerCase(), customer.getCode());
+		customer.setEmail(customer.getEmail().toLowerCase());
 		Customer created = authService.signup(customer);
 		Role role = roleRepository.findByName(RoleType.CUSTOMER.name());
 		CustomerRole cr = new CustomerRole(customer.getCustomerId(), role.getRoleId());
@@ -78,6 +79,7 @@ public class AuthController {
 	@PostMapping("/auth/admin/signup")
 	public Customer createAdmin(@RequestBody Customer customer) {
 		// return customerRepository.save(customer);
+		customer.setEmail(customer.getEmail().toLowerCase());
 		Customer created = authService.signup(customer);
 		Role role = roleRepository.findByName(RoleType.ADMIN.name());
 		CustomerRole cr = new CustomerRole(customer.getCustomerId(), role.getRoleId());
@@ -93,7 +95,7 @@ public class AuthController {
 			throw new UserTypeErrorException("User is not admin. Please use customer login");
 		}
 		String jwtToken = jwtService.generateToken(authenticatedUser);
-		String name = authenticatedUser.getFirstName()+" "+ authenticatedUser.getLastName();
+		String name = authenticatedUser.getFirstName() + " " + authenticatedUser.getLastName();
 		JwtInfo info = new JwtInfo(jwtToken, name);
 		return new ResponseEntity<>(info, HttpStatus.CREATED);
 	}
@@ -106,7 +108,7 @@ public class AuthController {
 		}
 
 		String jwtToken = jwtService.generateToken(authenticatedUser);
-		String name = authenticatedUser.getFirstName()+" "+ authenticatedUser.getLastName();
+		String name = authenticatedUser.getFirstName() + " " + authenticatedUser.getLastName();
 		JwtInfo info = new JwtInfo(jwtToken, name);
 		return new ResponseEntity<>(info, HttpStatus.CREATED);
 	}
@@ -115,7 +117,7 @@ public class AuthController {
 	public ResponseEntity<String> sendRegisterMail(@RequestParam("email") String email,
 			@RequestParam("firstTime") boolean firstTime) {
 		if (firstTime) {
-			Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+			Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
 			if (optionalCustomer.isPresent()) {
 				throw new AlreadyExistsException("Email already used.");
 			}
@@ -128,14 +130,14 @@ public class AuthController {
 	public ResponseEntity<CodeTime> sendMail(@RequestParam("email") String email,
 			@RequestParam("firstTime") boolean firstTime) {
 		if (firstTime) {
-			Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+			Optional<Customer> optionalCustomer = customerRepository.findByEmail(email.toLowerCase());
 			if (optionalCustomer.isEmpty()) {
 				throw new UserNotFoundException("Email not found.");
 			}
 		}
-		sendCodeEmail(email);
+		sendCodeEmail(email.toLowerCase());
 		LocalDateTime time = LocalDateTime.now();
-		CodeTime codeTime= new CodeTime(time);
+		CodeTime codeTime = new CodeTime(time);
 		return new ResponseEntity<>(codeTime, HttpStatus.OK);
 	}
 
@@ -146,29 +148,34 @@ public class AuthController {
 		String body = "Your security code is: " + number;
 		mailService.sendPlainText(email, "Your Security Code", body);
 		LocalDateTime time = LocalDateTime.now();
-		EmailCode code = new EmailCode(email, String.valueOf(number), time);
+		EmailCode code = new EmailCode(email.toLowerCase(), String.valueOf(number), time);
 		emailCodeRepository.save(code);
 	}
 
 	@PostMapping("/auth/customer/resetPassword")
 	public Customer resetPassword(@RequestBody ResetPassword reset) {
 		logger.info("reset password");
-		checkEmailCode(reset.getEmail(), reset.getCode());
-		Optional opt = customerRepository.findByEmail(reset.getEmail());
-
-		if (opt.isEmpty()) {
+		checkEmailCode(reset.getEmail().toLowerCase(), reset.getCode());
+		String email = reset.getEmail();
+		if (email != null) {
+			Optional opt = customerRepository.findByEmail(email.toLowerCase());
+			if (opt.isEmpty()) {
+				throw new UserNotFoundException("Customer Not Found");
+			} else {
+				Customer customer = (Customer) opt.get();
+				customer.setPassword(reset.getPassword());
+				authService.resetPassword(customer);
+				customer.setPassword("*****");
+				return customer;
+			}
+		}else {
 			throw new UserNotFoundException("Customer Not Found");
-		} else {
-			Customer customer = (Customer) opt.get();
-			customer.setPassword(reset.getPassword());
-			authService.resetPassword(customer);
-			customer.setPassword("*****");
-			return customer;
 		}
+
 	}
 
 	private void checkEmailCode(String email, String code) {
-		Optional<EmailCode> op = emailCodeRepository.findById(email);
+		Optional<EmailCode> op = emailCodeRepository.findById(email.toLowerCase());
 		if (op.isEmpty()) {
 			throw new EmailCodeException("Code not found for email: " + email);
 		} else {
