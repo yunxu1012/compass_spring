@@ -1,8 +1,8 @@
 package com.example.demo.entity;
 
 public class CustomerSearch {
-	private int squareFeet;
-	private int price;
+	private String squareFeet;
+	private String price;
 	private BedCount bedCount;
 	private BathCount bathCount;
 	private Integer cityId;
@@ -14,7 +14,7 @@ public class CustomerSearch {
 	
 	
 	
-	public CustomerSearch(int squareFeet, int price,  BedCount bedCount, BathCount bathCount, Integer cityId,
+	public CustomerSearch(String squareFeet, String price,  BedCount bedCount, BathCount bathCount, Integer cityId,
 			String homeType) {
 		super();
 		this.squareFeet = squareFeet;
@@ -27,19 +27,19 @@ public class CustomerSearch {
 
 
 
-	public int getSquareFeet() {
+	public String getSquareFeet() {
 		return squareFeet;
 	}
 
-	public void setSquareFeet(int squareFeet) {
+	public void setSquareFeet(String squareFeet) {
 		this.squareFeet = squareFeet;
 	}
 
-	public int getPrice() {
+	public String getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(String price) {
 		this.price = price;
 	}
 
@@ -76,8 +76,8 @@ public class CustomerSearch {
 	}
 	
 	public String toString() {
-		return "HouseType: "+homeType+", price: "+price+", bedcount: "+bedCount.getCount()
-		 +", "+", bathCount: "+bathCount+", cityId: "+cityId;
+		return "HouseType: "+homeType+", price: "+price+", bedcount: "+bedCount
+		 +", bathCount: "+bathCount+", cityId: "+cityId;
 	}
 
 }

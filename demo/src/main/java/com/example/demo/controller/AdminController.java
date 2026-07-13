@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entity.City;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerSearch;
-import com.example.demo.entity.JwtInfo;
 import com.example.demo.entity.RoleType;
 import com.example.demo.entity.ScheduledTask;
 import com.example.demo.exception.UserNotFoundException;
@@ -32,6 +31,7 @@ import com.example.demo.repository.CustomerSearchRepositoryImpl;
 import com.example.demo.repository.ScheduledTaskRepository;
 import com.example.demo.service.CustomerService;
 import com.example.demo.service.TaskService;
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -52,7 +52,7 @@ public class AdminController {
 	Logger logger = LoggerFactory.getLogger(AdminController.class);
 
 	@PostMapping(path = "/admin/search")
-	public ResponseEntity<List<Customer>> searchCustomer(@RequestBody CustomerSearch search) {
+	public ResponseEntity<List<Customer>> searchCustomer(@Valid @RequestBody CustomerSearch search) {
 		logger.info("search: " + search.toString());
 		List<Customer> customers = searchImpl.searchCustomer(search);
 		for (Customer customer : customers) {

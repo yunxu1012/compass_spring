@@ -6,7 +6,8 @@ public enum BathCount {
     TWO("2"),
     TWO_AND_HALF("2.5"),
     THREE("3"),
-    NO_MAX("100");
+    NO_MAX("100"),
+    UNKNOWN(null);
 	private String count;
 	BathCount(String count) {
 		this.count = count;

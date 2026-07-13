@@ -6,7 +6,8 @@ public enum BedCount {
     TWO("2"),
     THREE("3"),
     FOUR("4"),
-    NO_MAX("100");
+    NO_MAX("100"),
+	UNKNOWN(null);
 	private String count;
 	BedCount(String count) {
 		this.count = count;

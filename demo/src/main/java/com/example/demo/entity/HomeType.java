@@ -8,7 +8,8 @@ public enum Hometype {
 	MOBILE("Mobile"),
 	CO_OP("Co-op"), 
 	LAND("Land"),
-	OTHER("Other");
+	OTHER("Other"),
+	UNKNOWN(null);
 	private String type;
 	Hometype(String type) {
 		this.type = type;
