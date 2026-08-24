@@ -1,0 +1,85 @@
+package com.example.demo.entity;
+
+import jakarta.validation.constraints.NotBlank;
+
+public class CustomerSearch {
+	private String squareFeet;
+	private String price;
+	private BedCount bedCount;
+	private BathCount bathCount;
+	private Integer cityId;
+    private String homeType;
+	
+	public CustomerSearch() {
+		super();
+	}
+	
+	
+	
+	public CustomerSearch(String squareFeet, String price,  BedCount bedCount, BathCount bathCount, Integer cityId,
+			String homeType) {
+		super();
+		this.squareFeet = squareFeet;
+		this.price = price;
+		this.bedCount = bedCount;
+		this.bathCount = bathCount;
+		this.cityId = cityId;
+		this.homeType = homeType;
+	}
+
+
+
+	public String getSquareFeet() {
+		return squareFeet;
+	}
+
+	public void setSquareFeet(String squareFeet) {
+		this.squareFeet = squareFeet;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
+	}
+
+	public BedCount getBedCount() {
+		return bedCount;
+	}
+
+	public void setBedCount(BedCount bedCount) {
+		this.bedCount = bedCount;
+	}
+
+	public BathCount getBathCount() {
+		return bathCount;
+	}
+
+	public void setBathCount(BathCount bathCount) {
+		this.bathCount = bathCount;
+	}
+
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCity(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+	public String getHomeType() {
+		return homeType;
+	}
+
+	public void setHomeType(String homeType) {
+		this.homeType = homeType;
+	}
+	
+	public String toString() {
+		return "HouseType: "+homeType+", price: "+price+", bedcount: "+bedCount
+		 +", bathCount: "+bathCount+", cityId: "+cityId;
+	}
+
+}
