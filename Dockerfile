@@ -1,5 +1,6 @@
-FROM amazoncorretto:17
+#FROM amazoncorretto:17
 #FROM --platform=linux/amd64 amazoncorretto:17
+From public.ecr.aws/docker/library/eclipse-temurin:17-jdk-alpine
 VOLUME /tmp
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
