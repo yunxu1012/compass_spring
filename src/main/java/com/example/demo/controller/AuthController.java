@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +67,6 @@ public class AuthController {
 
 	@PostMapping("/auth/customer/signup")
 	public Customer createCustomer(@RequestBody Customer customer) {
-		// return customerRepository.save(customer);
 		checkEmailCode(customer.getEmail().toLowerCase(), customer.getCode());
 		customer.setEmail(customer.getEmail().toLowerCase());
 		Customer created = authService.signup(customer);
@@ -78,7 +79,6 @@ public class AuthController {
 
 	@PostMapping("/auth/admin/signup")
 	public Customer createAdmin(@RequestBody Customer customer) {
-		// return customerRepository.save(customer);
 		customer.setEmail(customer.getEmail().toLowerCase());
 		Customer created = authService.signup(customer);
 		Role role = roleRepository.findByName(RoleType.ADMIN.name());
@@ -154,7 +154,6 @@ public class AuthController {
 
 	@PostMapping("/auth/customer/resetPassword")
 	public Customer resetPassword(@RequestBody ResetPassword reset) {
-		logger.info("reset password");
 		checkEmailCode(reset.getEmail().toLowerCase(), reset.getCode());
 		String email = reset.getEmail();
 		if (email != null) {
@@ -168,7 +167,7 @@ public class AuthController {
 				customer.setPassword("*****");
 				return customer;
 			}
-		}else {
+		} else {
 			throw new UserNotFoundException("Customer Not Found");
 		}
 
@@ -189,10 +188,10 @@ public class AuthController {
 			}
 		}
 	}
-	
+
 	@GetMapping(path = "/auth/Ok")
 	public ResponseEntity<String> ok() {
-		return new ResponseEntity<>("{\"status\": \"OK 082801\"}", HttpStatus.OK);
+		return new ResponseEntity<>("{\"status\": \"OK 111201\"}", HttpStatus.OK);
 	}
 
 }
