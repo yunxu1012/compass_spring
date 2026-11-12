@@ -191,7 +191,7 @@ public class AuthController {
 
 	@GetMapping(path = "/auth/Ok")
 	public ResponseEntity<String> ok() {
-		return new ResponseEntity<>("{\"status\": \"OK 111204\"}", HttpStatus.OK);
+		return new ResponseEntity<>("{\"status\": \"OK 111205\"}", HttpStatus.OK);
 	}
 
 }
