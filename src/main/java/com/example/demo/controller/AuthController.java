@@ -191,7 +191,9 @@ public class AuthController {
 
 	@GetMapping(path = "/auth/Ok")
 	public ResponseEntity<String> ok() {
+                logger.info("log here!!!\n\n!!!\n\n");
 		return new ResponseEntity<>("{\"status\": \"OK 111207\"}", HttpStatus.OK);
 	}
 
 }
+
